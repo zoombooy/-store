@@ -1,0 +1,15 @@
+{
+  "name": "nba-store-fullstack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NBA Store fullstack app for Zhunxin Trade",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "build": "npm run build --prefix frontend && npm run build --prefix backend",
+    "start": "npm run start --prefix backend",
+    "lint": "npm run lint --prefix frontend && npm run lint --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply antialiased;
+  background:
+    radial-gradient(1200px 500px at 0% -20%, rgb(251 191 36 / 0.25), transparent 60%),
+    radial-gradient(1000px 600px at 100% -10%, rgb(59 130 246 / 0.2), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #f4f6fb 50%, #eef2f7 100%);
+  color: #111827;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", "Barlow", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.bg-shell {
+  background:
+    radial-gradient(1300px 620px at 0% -25%, rgb(251 191 36 / 0.17), transparent 62%),
+    radial-gradient(1000px 680px at 100% -20%, rgb(14 165 233 / 0.14), transparent 57%);
+}
