@@ -47,3 +47,10 @@ export interface CartItem {
   productId: string;
   quantity: number;
 }
+
+export interface StoreSummary {
+  totalProducts: number;
+  enabledProducts: number;
+  totalCategories: number;
+  latestProductUpdate: string | null;
+}

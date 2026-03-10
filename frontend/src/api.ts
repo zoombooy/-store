@@ -1,4 +1,4 @@
-import { Category, Product, ProductInput } from "./types";
+import { Category, Product, ProductInput, StoreSummary } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
@@ -56,6 +56,10 @@ export async function deleteCategory(id: string): Promise<void> {
 export async function getProducts(includeDisabled = true): Promise<Product[]> {
   const query = includeDisabled ? "?includeDisabled=true" : "";
   return request<Product[]>(`/api/products${query}`);
+}
+
+export async function getSummary(): Promise<StoreSummary> {
+  return request<StoreSummary>("/api/summary");
 }
 
 export async function createProduct(payload: ProductInput): Promise<Product> {

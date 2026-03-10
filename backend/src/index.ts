@@ -284,6 +284,24 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+app.get("/api/summary", (_req, res) => {
+  const totalProducts = (db.prepare("SELECT COUNT(*) as count FROM products").get() as { count: number }).count;
+  const enabledProducts = (
+    db.prepare("SELECT COUNT(*) as count FROM products WHERE enabled = 1").get() as { count: number }
+  ).count;
+  const totalCategories = (db.prepare("SELECT COUNT(*) as count FROM categories").get() as { count: number }).count;
+  const latestProductUpdate = (
+    db.prepare("SELECT MAX(updatedAt) as updatedAt FROM products").get() as { updatedAt: string | null }
+  ).updatedAt;
+
+  res.json({
+    totalProducts,
+    enabledProducts,
+    totalCategories,
+    latestProductUpdate
+  });
+});
+
 app.get("/api/categories", (_req, res) => {
   const rows = db.prepare("SELECT * FROM categories ORDER BY name ASC").all() as CategoryRow[];
   res.json(rows.map(rowToCategory));

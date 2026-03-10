@@ -22,11 +22,12 @@ import {
   deleteProduct,
   getCategories,
   getProducts,
+  getSummary,
   toggleProductStatus,
   updateProduct
 } from "./api";
 import { BRANDS, FALLBACK_PRODUCT_IMAGE, HERO_CAROUSEL, TEAMS } from "./constants";
-import { CartItem, Category, Product, ProductInput, Team } from "./types";
+import { CartItem, Category, Product, ProductInput, StoreSummary, Team } from "./types";
 
 type View = "home" | "list" | "admin";
 type Filter = { title: string; categoryId?: string; teamId?: string; search?: string };
@@ -51,6 +52,12 @@ function teamLabel(id: string | null): string {
   if (!id) return "Universal";
   const team = TEAMS.find((x) => x.id === id);
   return team ? `${team.city} ${team.name}` : id;
+}
+
+function formatTime(value: string | null): string {
+  if (!value) return "-";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString();
 }
 
 function ProductModal({
@@ -245,6 +252,7 @@ export default function App() {
   const [searchText, setSearchText] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [summary, setSummary] = useState<StoreSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [slide, setSlide] = useState(0);
@@ -259,9 +267,14 @@ export default function App() {
   const refresh = useCallback(async () => {
     try {
       setError(null);
-      const [nextCategories, nextProducts] = await Promise.all([getCategories(), getProducts(true)]);
+      const [nextCategories, nextProducts, nextSummary] = await Promise.all([
+        getCategories(),
+        getProducts(true),
+        getSummary()
+      ]);
       setCategories(nextCategories);
       setProducts(nextProducts);
+      setSummary(nextSummary);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load data.");
     } finally {
@@ -541,6 +554,25 @@ export default function App() {
               <div className="inline-flex rounded-xl bg-zinc-100 p-1">
                 <button onClick={() => setAdminTab("products")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "products" ? "bg-white shadow" : "text-zinc-500"}`}>Products</button>
                 <button onClick={() => setAdminTab("categories")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "categories" ? "bg-white shadow" : "text-zinc-500"}`}>Categories</button>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+                <p className="text-xs uppercase tracking-wide text-zinc-500">Total Products</p>
+                <p className="mt-2 text-2xl font-black">{summary?.totalProducts ?? "-"}</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+                <p className="text-xs uppercase tracking-wide text-zinc-500">Enabled Products</p>
+                <p className="mt-2 text-2xl font-black text-emerald-600">{summary?.enabledProducts ?? "-"}</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+                <p className="text-xs uppercase tracking-wide text-zinc-500">Categories</p>
+                <p className="mt-2 text-2xl font-black">{summary?.totalCategories ?? "-"}</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+                <p className="text-xs uppercase tracking-wide text-zinc-500">Last Product Update</p>
+                <p className="mt-2 text-sm font-semibold">{formatTime(summary?.latestProductUpdate ?? null)}</p>
               </div>
             </div>
 
