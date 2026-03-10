@@ -49,7 +49,7 @@ function readCart(): CartItem[] {
 }
 
 function teamLabel(id: string | null): string {
-  if (!id) return "Universal";
+  if (!id) return "通用";
   const team = TEAMS.find((x) => x.id === id);
   return team ? `${team.city} ${team.name}` : id;
 }
@@ -113,7 +113,7 @@ function ProductModal({
     <div className="fixed inset-0 z-[120] bg-black/50 p-4 flex items-center justify-center">
       <div className="w-full max-w-xl bg-white rounded-3xl border border-zinc-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-zinc-200 flex items-center justify-between">
-          <h3 className="font-bold">{product ? "Edit Product" : "New Product"}</h3>
+          <h3 className="font-bold">{product ? "编辑商品" : "新增商品"}</h3>
           <button onClick={onClose} className="h-8 w-8 rounded-full border border-zinc-300 inline-flex items-center justify-center">
             <X size={16} />
           </button>
@@ -125,7 +125,7 @@ function ProductModal({
             maxLength={80}
             value={form.name}
             onChange={(e) => setForm((v) => ({ ...v, name: e.target.value }))}
-            placeholder="Product name"
+            placeholder="商品名称"
             className="h-11 rounded-xl border border-zinc-300 px-3"
           />
           <div className="grid sm:grid-cols-2 gap-3">
@@ -154,7 +154,7 @@ function ProductModal({
             onChange={(e) => setForm((v) => ({ ...v, teamId: e.target.value || null }))}
             className="h-11 rounded-xl border border-zinc-300 px-3"
           >
-            <option value="">Universal Team</option>
+            <option value="">通用球队</option>
             {TEAMS.map((team) => (
               <option key={team.id} value={team.id}>
                 {team.city} {team.name}
@@ -164,7 +164,7 @@ function ProductModal({
           <input
             value={form.image}
             onChange={(e) => setForm((v) => ({ ...v, image: e.target.value }))}
-            placeholder="Image URL"
+            placeholder="图片链接"
             className="h-11 rounded-xl border border-zinc-300 px-3"
           />
           <label className="text-sm flex items-center gap-2">
@@ -173,10 +173,10 @@ function ProductModal({
               checked={form.enabled}
               onChange={(e) => setForm((v) => ({ ...v, enabled: e.target.checked }))}
             />
-            Product enabled
+            商品上架
           </label>
           <button disabled={saving} className="h-11 rounded-xl bg-orange-500 text-white font-semibold disabled:opacity-70">
-            {saving ? "Saving..." : "Save"}
+            {saving ? "保存中..." : "保存"}
           </button>
         </form>
       </div>
@@ -207,13 +207,13 @@ function CartPanel({
       <aside className="absolute right-0 top-0 h-full w-full max-w-md bg-white border-l border-zinc-200" onClick={(e) => e.stopPropagation()}>
         <div className="h-full flex flex-col">
           <div className="px-5 py-4 border-b border-zinc-200 flex items-center justify-between">
-            <h3 className="font-bold">Shopping Cart</h3>
+            <h3 className="font-bold">购物车</h3>
             <button onClick={onClose} className="h-8 w-8 rounded-full border border-zinc-300 inline-flex items-center justify-center">
               <X size={16} />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {items.length === 0 ? <p className="text-sm text-zinc-500">Cart is empty.</p> : null}
+            {items.length === 0 ? <p className="text-sm text-zinc-500">购物车为空。</p> : null}
             {items.map((item) => (
               <div key={item.product.id} className="rounded-2xl border border-zinc-200 p-3 flex gap-3">
                 <img src={item.product.image || FALLBACK_PRODUCT_IMAGE} alt={item.product.name} className="h-20 w-20 rounded-xl object-cover" />
@@ -237,7 +237,7 @@ function CartPanel({
             ))}
           </div>
           <div className="px-5 py-4 border-t border-zinc-200 flex items-center justify-between">
-            <span className="font-semibold">Subtotal</span>
+            <span className="font-semibold">小计</span>
             <span className="font-bold text-orange-600">{fmtPrice(total)}</span>
           </div>
         </div>
@@ -248,7 +248,7 @@ function CartPanel({
 
 export default function App() {
   const [view, setView] = useState<View>("home");
-  const [filter, setFilter] = useState<Filter>({ title: "Featured Products" });
+  const [filter, setFilter] = useState<Filter>({ title: "精选商品" });
   const [searchText, setSearchText] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -276,7 +276,7 @@ export default function App() {
       setProducts(nextProducts);
       setSummary(nextSummary);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load data.");
+      setError(e instanceof Error ? e.message : "数据加载失败。");
     } finally {
       setLoading(false);
     }
@@ -324,7 +324,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function openCategory(id: string, title?: string) {
-    setFilter({ title: title ?? categoryMap.get(id) ?? "Category", categoryId: id });
+    setFilter({ title: title ?? categoryMap.get(id) ?? "分类商品", categoryId: id });
     setView("list");
   }
   function openTeam(team: Team) {
@@ -335,7 +335,7 @@ export default function App() {
     event.preventDefault();
     const value = searchText.trim();
     if (!value) return;
-    setFilter({ title: `Search: ${value}`, search: value });
+    setFilter({ title: `搜索结果：${value}`, search: value });
     setView("list");
   }
   function addCart(productId: string) {
@@ -366,7 +366,7 @@ export default function App() {
       else await createProduct(payload);
       await refresh();
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : "Save failed.");
+      window.alert(e instanceof Error ? e.message : "保存失败。");
       throw e;
     }
   }
@@ -375,16 +375,16 @@ export default function App() {
       await toggleProductStatus(id, enabled);
       await refresh();
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : "Status update failed.");
+      window.alert(e instanceof Error ? e.message : "状态更新失败。");
     }
   }
   async function removeProduct(id: string) {
-    if (!window.confirm("Delete this product?")) return;
+    if (!window.confirm("确认删除该商品？")) return;
     try {
       await deleteProduct(id);
       await refresh();
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : "Delete failed.");
+      window.alert(e instanceof Error ? e.message : "删除失败。");
     }
   }
   async function addCategory(event: FormEvent<HTMLFormElement>) {
@@ -396,16 +396,16 @@ export default function App() {
       setNewCategoryName("");
       await refresh();
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : "Create category failed.");
+      window.alert(e instanceof Error ? e.message : "新增分类失败。");
     }
   }
   async function removeCategory(id: string) {
-    if (!window.confirm("Delete this category?")) return;
+    if (!window.confirm("确认删除该分类？")) return;
     try {
       await deleteCategory(id);
       await refresh();
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : "Delete category failed.");
+      window.alert(e instanceof Error ? e.message : "删除分类失败。");
     }
   }
 
@@ -417,14 +417,14 @@ export default function App() {
             <span className="h-9 w-9 rounded-xl bg-orange-500 inline-flex items-center justify-center">
               <ShoppingBag size={18} />
             </span>
-            NBA Store / Zhunxin Trade
+            NBA商城 / 准心贸易
           </button>
           <div className="flex items-center gap-2 text-sm font-semibold">
-            <button onClick={goHome} className={`h-10 px-3 rounded-xl ${view === "home" ? "bg-white/15" : "hover:bg-white/10"}`}>Home</button>
-            <button onClick={() => setView("admin")} className={`h-10 px-3 rounded-xl ${view === "admin" ? "bg-white/15" : "hover:bg-white/10"}`}>Admin</button>
+            <button onClick={goHome} className={`h-10 px-3 rounded-xl ${view === "home" ? "bg-white/15" : "hover:bg-white/10"}`}>首页</button>
+            <button onClick={() => setView("admin")} className={`h-10 px-3 rounded-xl ${view === "admin" ? "bg-white/15" : "hover:bg-white/10"}`}>后台</button>
             <button onClick={() => setCartOpen(true)} className="relative h-10 px-3 rounded-xl hover:bg-white/10 inline-flex items-center gap-2">
               <ShoppingBag size={16} />
-              Cart
+              购物车
               {cartCount > 0 ? <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-orange-500 text-[11px] inline-flex items-center justify-center">{cartCount}</span> : null}
             </button>
           </div>
@@ -439,11 +439,11 @@ export default function App() {
             <section className="relative rounded-3xl overflow-hidden bg-zinc-900 text-white border border-zinc-800">
               <img src={HERO_CAROUSEL[slide].image} alt={HERO_CAROUSEL[slide].title} className="h-[240px] sm:h-[320px] w-full object-cover opacity-60" />
               <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-900/40 to-transparent p-6 sm:p-10 flex flex-col justify-end">
-                <p className="text-xs uppercase tracking-[0.2em] text-orange-300">Trending</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-orange-300">本周热卖</p>
                 <h1 className="text-3xl sm:text-4xl font-black">{HERO_CAROUSEL[slide].title}</h1>
                 <p className="mt-2 text-sm sm:text-base text-zinc-200 max-w-2xl">{HERO_CAROUSEL[slide].subtitle}</p>
                 <div className="mt-4 flex gap-2">
-                  <button onClick={() => openCategory(HERO_CAROUSEL[slide].categoryId, HERO_CAROUSEL[slide].title)} className="h-10 px-4 rounded-xl bg-orange-500 text-white font-semibold">Shop This Collection</button>
+                  <button onClick={() => openCategory(HERO_CAROUSEL[slide].categoryId, HERO_CAROUSEL[slide].title)} className="h-10 px-4 rounded-xl bg-orange-500 text-white font-semibold">进入专区</button>
                   <div className="inline-flex items-center rounded-xl border border-white/30 bg-white/10 p-1">
                     {HERO_CAROUSEL.map((s, i) => (
                       <button key={s.id} onClick={() => setSlide(i)} className={`h-7 px-2 rounded-lg text-xs font-semibold ${i === slide ? "bg-white text-zinc-900" : "text-zinc-200"}`}>
@@ -459,17 +459,17 @@ export default function App() {
               <form onSubmit={runSearch} className="flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-                  <input value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search by product keyword" className="h-11 w-full rounded-xl border border-zinc-300 pl-10 pr-3" />
+                  <input value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="请输入商品关键字搜索" className="h-11 w-full rounded-xl border border-zinc-300 pl-10 pr-3" />
                 </div>
-                <button className="h-11 px-5 rounded-xl bg-zinc-900 text-white font-semibold">Search</button>
+                <button className="h-11 px-5 rounded-xl bg-zinc-900 text-white font-semibold">搜索</button>
               </form>
             </section>
 
             <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
               <div className="flex items-center justify-between mb-4 gap-2">
-                <h2 className="text-xl font-bold">Shop by Team</h2>
+                <h2 className="text-xl font-bold">按球队选购</h2>
                 <select defaultValue="" onChange={(e) => { const t = TEAMS.find((x) => x.id === e.target.value); if (t) openTeam(t); }} className="h-10 rounded-xl border border-zinc-300 px-3 text-sm">
-                  <option value="" disabled>Quick team select</option>
+                  <option value="" disabled>快速选择球队</option>
                   {TEAMS.map((t) => <option key={t.id} value={t.id}>{t.city} {t.name}</option>)}
                 </select>
               </div>
@@ -485,7 +485,7 @@ export default function App() {
             </section>
 
             <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
-              <h2 className="text-xl font-bold mb-4">Featured Brands</h2>
+              <h2 className="text-xl font-bold mb-4">品牌专区</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {BRANDS.map((b) => (
                   <div key={b.id} className="rounded-2xl border border-zinc-200 bg-white h-24 p-4 flex items-center justify-center">
@@ -496,7 +496,7 @@ export default function App() {
             </section>
 
             <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
-              <h2 className="text-xl font-bold mb-4">Hot Picks</h2>
+              <h2 className="text-xl font-bold mb-4">热门推荐</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {visibleProducts.slice(0, 8).map((p) => (
                   <article key={p.id} className="rounded-2xl border border-zinc-200 bg-white overflow-hidden">
@@ -506,7 +506,7 @@ export default function App() {
                       <div className="text-xs text-zinc-500">{categoryMap.get(p.categoryId) ?? p.categoryId}</div>
                       <div className="flex items-center justify-between">
                         <span className="text-orange-600 font-bold">{fmtPrice(p.price)}</span>
-                        <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold">Add</button>
+                        <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold">加入购物车</button>
                       </div>
                     </div>
                   </article>
@@ -523,7 +523,7 @@ export default function App() {
                 <button onClick={goHome} className="h-9 w-9 rounded-full border border-zinc-300 inline-flex items-center justify-center"><ArrowLeft size={16} /></button>
                 <h2 className="text-xl sm:text-2xl font-black">{filter.title}</h2>
               </div>
-              <span className="text-sm text-zinc-500">{filtered.length} items</span>
+              <span className="text-sm text-zinc-500">{filtered.length} 件商品</span>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {filtered.map((p) => (
@@ -537,41 +537,41 @@ export default function App() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-orange-600 font-bold">{fmtPrice(p.price)}</span>
-                      <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold">Add</button>
+                      <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold">加入购物车</button>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
-            {!loading && filtered.length === 0 ? <div className="rounded-2xl border border-dashed border-zinc-300 mt-6 p-8 text-center text-sm text-zinc-500">No products matched this filter.</div> : null}
+            {!loading && filtered.length === 0 ? <div className="rounded-2xl border border-dashed border-zinc-300 mt-6 p-8 text-center text-sm text-zinc-500">没有匹配的商品。</div> : null}
           </section>
         ) : null}
 
         {view === "admin" ? (
           <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-black">Admin Console</h2>
+              <h2 className="text-2xl font-black">管理后台</h2>
               <div className="inline-flex rounded-xl bg-zinc-100 p-1">
-                <button onClick={() => setAdminTab("products")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "products" ? "bg-white shadow" : "text-zinc-500"}`}>Products</button>
-                <button onClick={() => setAdminTab("categories")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "categories" ? "bg-white shadow" : "text-zinc-500"}`}>Categories</button>
+                <button onClick={() => setAdminTab("products")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "products" ? "bg-white shadow" : "text-zinc-500"}`}>商品管理</button>
+                <button onClick={() => setAdminTab("categories")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "categories" ? "bg-white shadow" : "text-zinc-500"}`}>分类管理</button>
               </div>
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-zinc-500">Total Products</p>
+                <p className="text-xs uppercase tracking-wide text-zinc-500">商品总数</p>
                 <p className="mt-2 text-2xl font-black">{summary?.totalProducts ?? "-"}</p>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-zinc-500">Enabled Products</p>
+                <p className="text-xs uppercase tracking-wide text-zinc-500">上架商品</p>
                 <p className="mt-2 text-2xl font-black text-emerald-600">{summary?.enabledProducts ?? "-"}</p>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-zinc-500">Categories</p>
+                <p className="text-xs uppercase tracking-wide text-zinc-500">分类数量</p>
                 <p className="mt-2 text-2xl font-black">{summary?.totalCategories ?? "-"}</p>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-zinc-500">Last Product Update</p>
+                <p className="text-xs uppercase tracking-wide text-zinc-500">最近更新时间</p>
                 <p className="mt-2 text-sm font-semibold">{formatTime(summary?.latestProductUpdate ?? null)}</p>
               </div>
             </div>
@@ -580,13 +580,13 @@ export default function App() {
               <>
                 <div className="flex justify-end">
                   <button onClick={() => { setEditing(null); setEditorOpen(true); }} className="h-10 px-4 rounded-xl bg-orange-500 text-white font-semibold inline-flex items-center gap-2">
-                    <Plus size={16} /> New Product
+                    <Plus size={16} /> 新增商品
                   </button>
                 </div>
                 <div className="overflow-x-auto rounded-2xl border border-zinc-200">
                   <table className="w-full min-w-[720px] text-sm">
                     <thead className="bg-zinc-50 text-zinc-500 uppercase text-xs">
-                      <tr><th className="text-left px-4 py-3">Product</th><th className="text-left px-4 py-3">Price</th><th className="text-left px-4 py-3">Category</th><th className="text-left px-4 py-3">Status</th><th className="text-right px-4 py-3">Actions</th></tr>
+                      <tr><th className="text-left px-4 py-3">商品</th><th className="text-left px-4 py-3">价格</th><th className="text-left px-4 py-3">分类</th><th className="text-left px-4 py-3">状态</th><th className="text-right px-4 py-3">操作</th></tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-200 bg-white">
                       {products.map((p) => (
@@ -602,7 +602,7 @@ export default function App() {
                           <td className="px-4 py-3">
                             <button onClick={() => void toggleStatus(p.id, !p.enabled)} className={`h-8 px-3 rounded-full text-xs font-semibold inline-flex items-center gap-1 ${p.enabled ? "bg-emerald-100 text-emerald-700" : "bg-zinc-200 text-zinc-700"}`}>
                               {p.enabled ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                              {p.enabled ? "Live" : "Hidden"}
+                              {p.enabled ? "已上架" : "已下架"}
                             </button>
                           </td>
                           <td className="px-4 py-3">
@@ -620,14 +620,14 @@ export default function App() {
             ) : (
               <>
                 <form onSubmit={addCategory} className="flex flex-col sm:flex-row gap-3">
-                  <input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder="Category name" className="h-10 flex-1 rounded-xl border border-zinc-300 px-3" />
-                  <button className="h-10 px-4 rounded-xl bg-orange-500 text-white font-semibold inline-flex items-center justify-center gap-2"><Plus size={16} /> Add Category</button>
+                  <input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder="请输入分类名称" className="h-10 flex-1 rounded-xl border border-zinc-300 px-3" />
+                  <button className="h-10 px-4 rounded-xl bg-orange-500 text-white font-semibold inline-flex items-center justify-center gap-2"><Plus size={16} /> 新增分类</button>
                 </form>
                 <div className="rounded-2xl border border-zinc-200 divide-y divide-zinc-200">
                   {categories.map((c) => (
                     <div key={c.id} className="px-4 py-3 flex items-center justify-between">
                       <div className="flex items-center gap-2 min-w-0"><Tag size={16} className="text-zinc-400" /><span className="font-semibold">{c.name}</span><span className="text-xs text-zinc-500 font-mono">{c.id}</span></div>
-                      <button onClick={() => void removeCategory(c.id)} className="h-8 px-3 rounded-lg border border-red-200 text-red-600 text-xs font-semibold">Delete</button>
+                      <button onClick={() => void removeCategory(c.id)} className="h-8 px-3 rounded-lg border border-red-200 text-red-600 text-xs font-semibold">删除</button>
                     </div>
                   ))}
                 </div>
@@ -643,11 +643,11 @@ export default function App() {
 
       <nav className="fixed md:hidden bottom-0 inset-x-0 h-16 border-t border-zinc-200 bg-white/95 z-40">
         <div className="h-full grid grid-cols-3">
-          <button onClick={goHome} className={`flex flex-col items-center justify-center text-xs font-semibold ${view === "home" ? "text-orange-600" : "text-zinc-500"}`}><Home size={18} />Home</button>
-          <button onClick={() => setView("admin")} className={`flex flex-col items-center justify-center text-xs font-semibold ${view === "admin" ? "text-orange-600" : "text-zinc-500"}`}><LayoutGrid size={18} />Admin</button>
+          <button onClick={goHome} className={`flex flex-col items-center justify-center text-xs font-semibold ${view === "home" ? "text-orange-600" : "text-zinc-500"}`}><Home size={18} />首页</button>
+          <button onClick={() => setView("admin")} className={`flex flex-col items-center justify-center text-xs font-semibold ${view === "admin" ? "text-orange-600" : "text-zinc-500"}`}><LayoutGrid size={18} />后台</button>
           <button onClick={() => setCartOpen(true)} className="relative flex flex-col items-center justify-center text-xs font-semibold text-zinc-500">
             <ShoppingBag size={18} />
-            Cart
+            购物车
             {cartCount > 0 ? <span className="absolute top-2 right-[calc(50%-26px)] h-4 min-w-4 px-1 rounded-full bg-orange-500 text-[10px] text-white font-bold inline-flex items-center justify-center">{cartCount}</span> : null}
           </button>
         </div>

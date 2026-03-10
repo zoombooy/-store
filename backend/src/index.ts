@@ -54,16 +54,16 @@ type ProductInput = {
 };
 
 const SEED_CATEGORIES: Array<Omit<CategoryRow, "createdAt" | "updatedAt">> = [
-  { id: "special", name: "Special Deals" },
-  { id: "streetwear", name: "Streetwear" },
-  { id: "allstar", name: "All-Star Picks" },
-  { id: "regular", name: "Regular Items" }
+  { id: "special", name: "特价专区" },
+  { id: "streetwear", name: "潮流专区" },
+  { id: "allstar", name: "全明星专区" },
+  { id: "regular", name: "常规商品" }
 ];
 
 const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   {
     id: "p_1",
-    name: "Lakers #24 Legacy Jersey",
+    name: "湖人24号经典复刻球衣",
     price: 599,
     image: "https://picsum.photos/seed/lakers-jersey/600/600",
     teamId: "lal",
@@ -72,7 +72,7 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   },
   {
     id: "p_2",
-    name: "Warriors Signature Basketball Shoes",
+    name: "勇士签名款篮球鞋",
     price: 1299,
     image: "https://picsum.photos/seed/warriors-shoe/600/600",
     teamId: "gsw",
@@ -81,7 +81,7 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   },
   {
     id: "p_3",
-    name: "NBA x Nike Hoodie",
+    name: "NBA x Nike 联名卫衣",
     price: 499,
     image: "https://picsum.photos/seed/nike-hoodie/600/600",
     teamId: null,
@@ -90,7 +90,7 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   },
   {
     id: "p_4",
-    name: "Chicago Bulls Vintage Cap",
+    name: "公牛复古棒球帽",
     price: 199,
     image: "https://picsum.photos/seed/bulls-cap/600/600",
     teamId: "chi",
@@ -99,7 +99,7 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   },
   {
     id: "p_5",
-    name: "All-Star Official Game Jersey",
+    name: "全明星官方比赛球衣",
     price: 899,
     image: "https://picsum.photos/seed/allstar-jersey/600/600",
     teamId: null,
@@ -108,7 +108,7 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   },
   {
     id: "p_6",
-    name: "Houston Rockets Training Tee",
+    name: "火箭队训练短袖",
     price: 159,
     image: "https://picsum.photos/seed/rockets-tee/600/600",
     teamId: "hou",
@@ -117,7 +117,7 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   },
   {
     id: "p_7",
-    name: "Spurs Performance Shorts",
+    name: "马刺运动短裤",
     price: 229,
     image: "https://picsum.photos/seed/spurs-shorts/600/600",
     teamId: "sas",
@@ -126,7 +126,7 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
   },
   {
     id: "p_8",
-    name: "Celtics Fan Scarf",
+    name: "凯尔特人围巾",
     price: 99,
     image: "https://picsum.photos/seed/celtics-scarf/600/600",
     teamId: "bos",
@@ -134,6 +134,24 @@ const SEED_PRODUCTS: Array<Omit<ProductRow, "createdAt" | "updatedAt">> = [
     enabled: 1
   }
 ];
+
+const LEGACY_CATEGORY_NAME_MAP: Record<string, string> = {
+  "Special Deals": "特价专区",
+  Streetwear: "潮流专区",
+  "All-Star Picks": "全明星专区",
+  "Regular Items": "常规商品"
+};
+
+const LEGACY_PRODUCT_NAME_MAP: Record<string, string> = {
+  "Lakers #24 Legacy Jersey": "湖人24号经典复刻球衣",
+  "Warriors Signature Basketball Shoes": "勇士签名款篮球鞋",
+  "NBA x Nike Hoodie": "NBA x Nike 联名卫衣",
+  "Chicago Bulls Vintage Cap": "公牛复古棒球帽",
+  "All-Star Official Game Jersey": "全明星官方比赛球衣",
+  "Houston Rockets Training Tee": "火箭队训练短袖",
+  "Spurs Performance Shorts": "马刺运动短裤",
+  "Celtics Fan Scarf": "凯尔特人围巾"
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -175,16 +193,16 @@ function parseProductInput(payload: unknown): ProductInput {
   const parsedPrice = Number(body.price);
 
   if (!name || name.length < 2 || name.length > 80) {
-    throw new Error("Product name must be between 2 and 80 characters.");
+    throw new Error("商品名称长度需在 2-80 个字符之间。");
   }
   if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
-    throw new Error("Price must be a positive number.");
+    throw new Error("价格必须是大于 0 的数字。");
   }
   if (!image) {
-    throw new Error("Product image URL is required.");
+    throw new Error("请填写商品图片地址。");
   }
   if (!categoryId) {
-    throw new Error("Category is required.");
+    throw new Error("请选择商品分类。");
   }
 
   return {
@@ -201,7 +219,7 @@ function parseCategoryName(payload: unknown): string {
   const body = payload as { name?: unknown };
   const name = (body.name ?? "").toString().trim();
   if (!name || name.length < 2 || name.length > 32) {
-    throw new Error("Category name must be between 2 and 32 characters.");
+    throw new Error("分类名称长度需在 2-32 个字符之间。");
   }
   return name;
 }
@@ -268,6 +286,17 @@ function initializeDatabase(): Database.Database {
     }
   }
 
+  // Migrate early English seed content to Chinese without overriding custom user data.
+  const updateCategoryName = db.prepare("UPDATE categories SET name = ?, updatedAt = ? WHERE name = ?");
+  for (const [legacy, next] of Object.entries(LEGACY_CATEGORY_NAME_MAP)) {
+    updateCategoryName.run(next, nowIso(), legacy);
+  }
+
+  const updateProductName = db.prepare("UPDATE products SET name = ?, updatedAt = ? WHERE name = ?");
+  for (const [legacy, next] of Object.entries(LEGACY_PRODUCT_NAME_MAP)) {
+    updateProductName.run(next, nowIso(), legacy);
+  }
+
   return db;
 }
 
@@ -321,7 +350,7 @@ app.post("/api/categories", (req, res) => {
     const category = db.prepare("SELECT * FROM categories WHERE id = ?").get(id) as CategoryRow;
     res.status(201).json(rowToCategory(category));
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create category.";
+    const message = error instanceof Error ? error.message : "创建分类失败。";
     res.status(400).json({ message });
   }
 });
@@ -331,13 +360,13 @@ app.delete("/api/categories/:id", (req, res) => {
   const category = db.prepare("SELECT * FROM categories WHERE id = ?").get(id) as CategoryRow | undefined;
 
   if (!category) {
-    res.status(404).json({ message: "Category not found." });
+    res.status(404).json({ message: "分类不存在。" });
     return;
   }
 
   const inUse = db.prepare("SELECT COUNT(*) as count FROM products WHERE categoryId = ?").get(id) as { count: number };
   if (inUse.count > 0) {
-    res.status(409).json({ message: "Cannot delete category that still has products." });
+    res.status(409).json({ message: "该分类下还有商品，无法删除。" });
     return;
   }
 
@@ -382,7 +411,7 @@ app.post("/api/products", (req, res) => {
     const payload = parseProductInput(req.body);
     const category = db.prepare("SELECT id FROM categories WHERE id = ?").get(payload.categoryId);
     if (!category) {
-      res.status(400).json({ message: "Category does not exist." });
+      res.status(400).json({ message: "分类不存在。" });
       return;
     }
 
@@ -407,7 +436,7 @@ app.post("/api/products", (req, res) => {
     const created = db.prepare("SELECT * FROM products WHERE id = ?").get(id) as ProductRow;
     res.status(201).json(rowToProduct(created));
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create product.";
+    const message = error instanceof Error ? error.message : "创建商品失败。";
     res.status(400).json({ message });
   }
 });
@@ -416,7 +445,7 @@ app.put("/api/products/:id", (req, res) => {
   const { id } = req.params;
   const existing = db.prepare("SELECT * FROM products WHERE id = ?").get(id) as ProductRow | undefined;
   if (!existing) {
-    res.status(404).json({ message: "Product not found." });
+    res.status(404).json({ message: "商品不存在。" });
     return;
   }
 
@@ -424,7 +453,7 @@ app.put("/api/products/:id", (req, res) => {
     const payload = parseProductInput(req.body);
     const category = db.prepare("SELECT id FROM categories WHERE id = ?").get(payload.categoryId);
     if (!category) {
-      res.status(400).json({ message: "Category does not exist." });
+      res.status(400).json({ message: "分类不存在。" });
       return;
     }
 
@@ -446,7 +475,7 @@ app.put("/api/products/:id", (req, res) => {
     const updated = db.prepare("SELECT * FROM products WHERE id = ?").get(id) as ProductRow;
     res.json(rowToProduct(updated));
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update product.";
+    const message = error instanceof Error ? error.message : "更新商品失败。";
     res.status(400).json({ message });
   }
 });
@@ -457,7 +486,7 @@ app.patch("/api/products/:id/status", (req, res) => {
   const existing = db.prepare("SELECT * FROM products WHERE id = ?").get(id) as ProductRow | undefined;
 
   if (!existing) {
-    res.status(404).json({ message: "Product not found." });
+    res.status(404).json({ message: "商品不存在。" });
     return;
   }
 
@@ -470,7 +499,7 @@ app.delete("/api/products/:id", (req, res) => {
   const { id } = req.params;
   const existing = db.prepare("SELECT id FROM products WHERE id = ?").get(id);
   if (!existing) {
-    res.status(404).json({ message: "Product not found." });
+    res.status(404).json({ message: "商品不存在。" });
     return;
   }
 
