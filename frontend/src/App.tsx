@@ -32,6 +32,10 @@ import { CartItem, Category, Product, ProductInput, StoreSummary, Team } from ".
 type View = "home" | "list" | "admin";
 type Filter = { title: string; categoryId?: string; teamId?: string; search?: string };
 const CART_KEY = "nba-store-cart";
+const PANEL_CLASS =
+  "rounded-3xl border border-white/70 bg-white/78 backdrop-blur-xl shadow-[0_18px_42px_-30px_rgba(15,23,42,0.55)]";
+const TABLE_PANEL_CLASS =
+  "rounded-3xl border border-white/70 bg-white/82 backdrop-blur-xl shadow-[0_18px_42px_-30px_rgba(15,23,42,0.5)]";
 
 function fmtPrice(value: number): string {
   return `¥${value.toFixed(0)}`;
@@ -229,7 +233,7 @@ function CartPanel({
                       <Plus size={14} />
                     </button>
                     <button onClick={() => onRemove(item.product.id)} className="ml-auto text-xs text-red-600">
-                      Remove
+                      删除
                     </button>
                   </div>
                 </div>
@@ -410,43 +414,52 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-shell text-zinc-900 pb-20 md:pb-8">
-      <header className="sticky top-0 z-50 bg-zinc-950 text-white border-b border-zinc-800">
+    <div className="relative isolate min-h-screen overflow-x-hidden bg-shell text-zinc-900 pb-20 md:pb-8">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[440px] bg-[radial-gradient(circle_at_16%_18%,rgba(249,115,22,0.2),transparent_54%),radial-gradient(circle_at_82%_0%,rgba(56,189,248,0.18),transparent_50%)]" />
+      <div className="pointer-events-none absolute -left-16 top-44 -z-10 h-56 w-56 rounded-full bg-orange-200/35 blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 top-72 -z-10 h-72 w-72 rounded-full bg-sky-200/30 blur-3xl" />
+
+      <header className="sticky top-0 z-50 border-b border-white/70 bg-white/82 backdrop-blur-xl shadow-[0_8px_30px_-24px_rgba(15,23,42,0.6)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <button onClick={goHome} className="inline-flex items-center gap-2 font-bold hover:text-orange-300">
-            <span className="h-9 w-9 rounded-xl bg-orange-500 inline-flex items-center justify-center">
+          <button onClick={goHome} className="inline-flex items-center gap-2 font-bold text-zinc-900 hover:text-orange-600 transition-colors">
+            <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-[0_10px_18px_-10px_rgba(249,115,22,0.85)] inline-flex items-center justify-center">
               <ShoppingBag size={18} />
             </span>
-            NBA商城 / 准心贸易
+            准心贸易
           </button>
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <button onClick={goHome} className={`h-10 px-3 rounded-xl ${view === "home" ? "bg-white/15" : "hover:bg-white/10"}`}>首页</button>
-            <button onClick={() => setView("admin")} className={`h-10 px-3 rounded-xl ${view === "admin" ? "bg-white/15" : "hover:bg-white/10"}`}>后台</button>
-            <button onClick={() => setCartOpen(true)} className="relative h-10 px-3 rounded-xl hover:bg-white/10 inline-flex items-center gap-2">
+          <div className="flex items-center gap-2 text-sm font-semibold text-zinc-700">
+            <button onClick={goHome} className={`h-10 px-3 rounded-xl transition-colors ${view === "home" ? "bg-zinc-900 text-white shadow-sm" : "hover:bg-zinc-100"}`}>首页</button>
+            <button onClick={() => setView("admin")} className={`h-10 px-3 rounded-xl transition-colors ${view === "admin" ? "bg-zinc-900 text-white shadow-sm" : "hover:bg-zinc-100"}`}>后台</button>
+            <button onClick={() => setCartOpen(true)} className="relative h-10 px-3 rounded-xl hover:bg-zinc-100 inline-flex items-center gap-2 transition-colors">
               <ShoppingBag size={16} />
               购物车
-              {cartCount > 0 ? <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-orange-500 text-[11px] inline-flex items-center justify-center">{cartCount}</span> : null}
+              {cartCount > 0 ? <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-[11px] text-white inline-flex items-center justify-center">{cartCount}</span> : null}
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         {error ? <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
 
         {view === "home" ? (
           <>
-            <section className="relative rounded-3xl overflow-hidden bg-zinc-900 text-white border border-zinc-800">
-              <img src={HERO_CAROUSEL[slide].image} alt={HERO_CAROUSEL[slide].title} className="h-[240px] sm:h-[320px] w-full object-cover opacity-60" />
-              <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-900/40 to-transparent p-6 sm:p-10 flex flex-col justify-end">
+            <section className="relative overflow-hidden rounded-[30px] border border-white/40 bg-zinc-900/90 text-white shadow-[0_24px_55px_-34px_rgba(15,23,42,0.95)]">
+              <img src={HERO_CAROUSEL[slide].image} alt={HERO_CAROUSEL[slide].title} className="h-[240px] sm:h-[320px] w-full object-cover opacity-65" />
+              <div className="absolute inset-0 bg-gradient-to-r from-zinc-900/86 via-zinc-900/40 to-transparent p-6 sm:p-10 flex flex-col justify-end">
                 <p className="text-xs uppercase tracking-[0.2em] text-orange-300">本周热卖</p>
-                <h1 className="text-3xl sm:text-4xl font-black">{HERO_CAROUSEL[slide].title}</h1>
-                <p className="mt-2 text-sm sm:text-base text-zinc-200 max-w-2xl">{HERO_CAROUSEL[slide].subtitle}</p>
+                <h1 className="text-3xl sm:text-4xl font-black drop-shadow-sm">{HERO_CAROUSEL[slide].title}</h1>
+                <p className="mt-2 text-sm sm:text-base text-zinc-100/95 max-w-2xl">{HERO_CAROUSEL[slide].subtitle}</p>
                 <div className="mt-4 flex gap-2">
-                  <button onClick={() => openCategory(HERO_CAROUSEL[slide].categoryId, HERO_CAROUSEL[slide].title)} className="h-10 px-4 rounded-xl bg-orange-500 text-white font-semibold">进入专区</button>
-                  <div className="inline-flex items-center rounded-xl border border-white/30 bg-white/10 p-1">
+                  <button
+                    onClick={() => openCategory(HERO_CAROUSEL[slide].categoryId, HERO_CAROUSEL[slide].title)}
+                    className="h-10 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_12px_24px_-12px_rgba(249,115,22,0.9)]"
+                  >
+                    进入专区
+                  </button>
+                  <div className="inline-flex items-center rounded-xl border border-white/40 bg-white/10 p-1 backdrop-blur-sm">
                     {HERO_CAROUSEL.map((s, i) => (
-                      <button key={s.id} onClick={() => setSlide(i)} className={`h-7 px-2 rounded-lg text-xs font-semibold ${i === slide ? "bg-white text-zinc-900" : "text-zinc-200"}`}>
+                      <button key={s.id} onClick={() => setSlide(i)} className={`h-7 px-2 rounded-lg text-xs font-semibold transition-colors ${i === slide ? "bg-white text-zinc-900" : "text-zinc-200 hover:text-white"}`}>
                         {i + 1}
                       </button>
                     ))}
@@ -455,27 +468,32 @@ export default function App() {
               </div>
             </section>
 
-            <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
+            <section className={`${PANEL_CLASS} p-5 sm:p-6`}>
               <form onSubmit={runSearch} className="flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-                  <input value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="请输入商品关键字搜索" className="h-11 w-full rounded-xl border border-zinc-300 pl-10 pr-3" />
+                  <input
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="请输入商品关键字搜索"
+                    className="h-11 w-full rounded-xl border border-zinc-200 bg-white/90 pl-10 pr-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100"
+                  />
                 </div>
-                <button className="h-11 px-5 rounded-xl bg-zinc-900 text-white font-semibold">搜索</button>
+                <button className="h-11 px-5 rounded-xl bg-zinc-900 text-white font-semibold shadow-[0_12px_24px_-16px_rgba(15,23,42,0.9)]">搜索</button>
               </form>
             </section>
 
-            <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
+            <section className={`${PANEL_CLASS} p-5 sm:p-6`}>
               <div className="flex items-center justify-between mb-4 gap-2">
                 <h2 className="text-xl font-bold">按球队选购</h2>
-                <select defaultValue="" onChange={(e) => { const t = TEAMS.find((x) => x.id === e.target.value); if (t) openTeam(t); }} className="h-10 rounded-xl border border-zinc-300 px-3 text-sm">
+                <select defaultValue="" onChange={(e) => { const t = TEAMS.find((x) => x.id === e.target.value); if (t) openTeam(t); }} className="h-10 rounded-xl border border-zinc-200 bg-white/90 px-3 text-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100">
                   <option value="" disabled>快速选择球队</option>
                   {TEAMS.map((t) => <option key={t.id} value={t.id}>{t.city} {t.name}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
                 {TEAMS.map((team) => (
-                  <button key={team.id} onClick={() => openTeam(team)} className="rounded-2xl border border-zinc-200 bg-white p-3 hover:border-orange-300 text-left">
+                  <button key={team.id} onClick={() => openTeam(team)} className="rounded-2xl border border-zinc-200 bg-white/90 p-3 hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-[0_14px_30px_-22px_rgba(249,115,22,0.9)] text-left transition-all">
                     <img src={team.logo} alt={team.name} className="h-10 w-10 object-contain" />
                     <p className="mt-2 text-xs font-semibold line-clamp-1">{team.name}</p>
                     <p className="text-[11px] text-zinc-500 line-clamp-1">{team.city}</p>
@@ -484,29 +502,29 @@ export default function App() {
               </div>
             </section>
 
-            <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
+            <section className={`${PANEL_CLASS} p-5 sm:p-6`}>
               <h2 className="text-xl font-bold mb-4">品牌专区</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {BRANDS.map((b) => (
-                  <div key={b.id} className="rounded-2xl border border-zinc-200 bg-white h-24 p-4 flex items-center justify-center">
+                  <div key={b.id} className="rounded-2xl border border-zinc-200 bg-white/92 h-24 p-4 flex items-center justify-center transition-transform hover:-translate-y-0.5">
                     <img src={b.logo} alt={b.name} className="max-h-full max-w-full object-contain grayscale hover:grayscale-0" />
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
+            <section className={`${PANEL_CLASS} p-5 sm:p-6`}>
               <h2 className="text-xl font-bold mb-4">热门推荐</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {visibleProducts.slice(0, 8).map((p) => (
-                  <article key={p.id} className="rounded-2xl border border-zinc-200 bg-white overflow-hidden">
+                  <article key={p.id} className="rounded-2xl border border-zinc-200 bg-white/95 overflow-hidden shadow-[0_10px_22px_-18px_rgba(15,23,42,0.45)]">
                     <img src={p.image || FALLBACK_PRODUCT_IMAGE} alt={p.name} className="aspect-square w-full object-cover" />
                     <div className="p-3 space-y-2">
                       <p className="font-semibold line-clamp-2 min-h-10">{p.name}</p>
                       <div className="text-xs text-zinc-500">{categoryMap.get(p.categoryId) ?? p.categoryId}</div>
                       <div className="flex items-center justify-between">
                         <span className="text-orange-600 font-bold">{fmtPrice(p.price)}</span>
-                        <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold">加入购物车</button>
+                        <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold shadow-[0_10px_20px_-12px_rgba(15,23,42,0.9)]">加入购物车</button>
                       </div>
                     </div>
                   </article>
@@ -517,7 +535,7 @@ export default function App() {
         ) : null}
 
         {view === "list" ? (
-          <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6">
+          <section className={`${PANEL_CLASS} p-5 sm:p-6`}>
             <div className="flex items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-2">
                 <button onClick={goHome} className="h-9 w-9 rounded-full border border-zinc-300 inline-flex items-center justify-center"><ArrowLeft size={16} /></button>
@@ -527,7 +545,7 @@ export default function App() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {filtered.map((p) => (
-                <article key={p.id} className="rounded-2xl border border-zinc-200 bg-white overflow-hidden">
+                <article key={p.id} className="rounded-2xl border border-zinc-200 bg-white/95 overflow-hidden shadow-[0_10px_22px_-18px_rgba(15,23,42,0.45)]">
                   <img src={p.image || FALLBACK_PRODUCT_IMAGE} alt={p.name} className="aspect-square w-full object-cover" />
                   <div className="p-3 space-y-2">
                     <p className="font-semibold line-clamp-2 min-h-10">{p.name}</p>
@@ -537,7 +555,7 @@ export default function App() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-orange-600 font-bold">{fmtPrice(p.price)}</span>
-                      <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold">加入购物车</button>
+                      <button onClick={() => addCart(p.id)} className="h-9 px-3 rounded-lg bg-zinc-900 text-white text-sm font-semibold shadow-[0_10px_20px_-12px_rgba(15,23,42,0.9)]">加入购物车</button>
                     </div>
                   </div>
                 </article>
@@ -548,12 +566,12 @@ export default function App() {
         ) : null}
 
         {view === "admin" ? (
-          <section className="rounded-3xl bg-white/90 border border-zinc-200 shadow-lg p-5 sm:p-6 space-y-4">
+          <section className={`${TABLE_PANEL_CLASS} p-5 sm:p-6 space-y-4`}>
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black">管理后台</h2>
-              <div className="inline-flex rounded-xl bg-zinc-100 p-1">
-                <button onClick={() => setAdminTab("products")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "products" ? "bg-white shadow" : "text-zinc-500"}`}>商品管理</button>
-                <button onClick={() => setAdminTab("categories")} className={`h-9 px-4 rounded-lg text-sm font-semibold ${adminTab === "categories" ? "bg-white shadow" : "text-zinc-500"}`}>分类管理</button>
+              <div className="inline-flex rounded-xl bg-zinc-100/90 p-1">
+                <button onClick={() => setAdminTab("products")} className={`h-9 px-4 rounded-lg text-sm font-semibold transition-colors ${adminTab === "products" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}>商品管理</button>
+                <button onClick={() => setAdminTab("categories")} className={`h-9 px-4 rounded-lg text-sm font-semibold transition-colors ${adminTab === "categories" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}>分类管理</button>
               </div>
             </div>
 
@@ -583,7 +601,7 @@ export default function App() {
                     <Plus size={16} /> 新增商品
                   </button>
                 </div>
-                <div className="overflow-x-auto rounded-2xl border border-zinc-200">
+                <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white/90">
                   <table className="w-full min-w-[720px] text-sm">
                     <thead className="bg-zinc-50 text-zinc-500 uppercase text-xs">
                       <tr><th className="text-left px-4 py-3">商品</th><th className="text-left px-4 py-3">价格</th><th className="text-left px-4 py-3">分类</th><th className="text-left px-4 py-3">状态</th><th className="text-right px-4 py-3">操作</th></tr>
@@ -641,7 +659,7 @@ export default function App() {
 
       {editorOpen ? <ProductModal product={editing} categories={categories} onClose={() => setEditorOpen(false)} onSave={saveProduct} /> : null}
 
-      <nav className="fixed md:hidden bottom-0 inset-x-0 h-16 border-t border-zinc-200 bg-white/95 z-40">
+      <nav className="fixed md:hidden bottom-0 inset-x-0 h-16 border-t border-white/80 bg-white/88 backdrop-blur-xl z-40 shadow-[0_-10px_30px_-20px_rgba(15,23,42,0.55)]">
         <div className="h-full grid grid-cols-3">
           <button onClick={goHome} className={`flex flex-col items-center justify-center text-xs font-semibold ${view === "home" ? "text-orange-600" : "text-zinc-500"}`}><Home size={18} />首页</button>
           <button onClick={() => setView("admin")} className={`flex flex-col items-center justify-center text-xs font-semibold ${view === "admin" ? "text-orange-600" : "text-zinc-500"}`}><LayoutGrid size={18} />后台</button>

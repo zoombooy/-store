@@ -1,98 +1,87 @@
-# NBA Store - 准心贸易（全栈版）
+# 准心贸易 NBA 商城（全栈版）
 
-基于你提供的 `nba-store---准心贸易` 原型改造为可运行的前后端应用，代码全部落地在 `-store` 目录。
+本项目基于 `nba-store---准心贸易` 原型改造，代码统一落地在 `-store` 目录下，包含前端商城与后台管理、后端 API 与本地数据库。
 
-## 1. 项目目标
-
-- 将原型页面转换为真实可运行的前后端代码
-- 支持商品/分类管理、上架开关、检索、按球队浏览
-- 提供购物车交互（本地持久化）
-- 支持开发阶段实时预览
-
-## 2. 技术栈
-
-- 前端：React + Vite + TypeScript + Tailwind CSS + Lucide
-- 后端：Node.js + Express + TypeScript
-- 数据库：SQLite（`better-sqlite3`）
-
-## 3. 目录结构
+## 1. 目录结构
 
 ```text
 -store/
-├─ frontend/                # 前端应用（页面与交互）
-│  ├─ src/App.tsx
-│  ├─ src/api.ts
-│  ├─ src/constants.ts
+├─ frontend/                  # React + Vite + TypeScript 前端
+│  ├─ src/App.tsx             # 首页、列表、购物车、后台管理 UI
+│  ├─ src/constants.ts        # 球队、品牌、轮播等常量
+│  ├─ src/api.ts              # API 请求封装
 │  └─ ...
-├─ backend/                 # 后端 API + SQLite
-│  ├─ src/index.ts
-│  ├─ data/
-│  └─ ...
-├─ package.json             # 根脚本（联动启动）
+├─ backend/                   # Node.js + Express + TypeScript 后端
+│  ├─ src/index.ts            # API 入口
+│  ├─ src/services/           # 业务逻辑
+│  ├─ src/routes/             # 路由
+│  └─ data/                   # SQLite 数据文件
 └─ README.md
 ```
 
-## 4. 已实现功能
+## 2. 已实现功能
 
-- 首页：轮播、品牌区、球队区、热门商品
-- 搜索：按关键字检索商品
-- 列表：按分类/球队查看商品
-- 后台：
-  - 商品新增、编辑、删除
-  - 商品启用/禁用
-  - 分类新增、删除（有商品占用时禁止删除）
-  - 统计看板（商品总数、上架数量、分类数、最近更新时间）
-- 购物车：
-  - 添加/增减/删除
-  - 本地存储（刷新后不丢失）
+- 商城首页：轮播、品牌专区、球队专区、热门推荐
+- 商品浏览：按分类、按球队、按关键字搜索
+- 购物车：新增、加减、删除、浏览器本地持久化
+- 管理后台：商品增删改、上下架切换、分类管理
+- 统计看板：商品总数、上架数、分类数、最近更新时间
+- 中文界面与视觉优化：浅色背景、玻璃质感卡片、层次阴影
 
-## 5. API 概览
+## 3. 球队排序说明（按你的要求）
 
-- `GET /api/health`
-- `GET /api/summary`
-- `GET /api/categories`
-- `POST /api/categories`
-- `DELETE /api/categories/:id`
-- `GET /api/products?includeDisabled=true`
-- `POST /api/products`
-- `PUT /api/products/:id`
-- `PATCH /api/products/:id/status`
-- `DELETE /api/products/:id`
+`frontend/src/constants.ts` 中球队顺序已调整为：
 
-## 6. 本地运行与预览
+1. 湖人
+2. 勇士
+3. 马刺
+4. 火箭
+5. 凯尔特人
+6. 热火
+...
+最后一项为：老鹰。
 
-### 6.1 安装依赖
+## 4. 技术栈
+
+- 前端：React + Vite + TypeScript + Tailwind CSS + Lucide
+- 后端：Node.js + Express + TypeScript
+- 数据库：SQLite（better-sqlite3）
+
+## 5. 本地启动与预览
+
+在 `-store` 根目录执行：
 
 ```bash
 npm install
 cd frontend && npm install
 cd ../backend && npm install
+cd ..
 ```
 
-### 6.2 一键开发预览（推荐）
-
-在项目根目录执行：
+一键并行开发（推荐）：
 
 ```bash
 npm run dev
 ```
+
+默认地址：
 
 - 前端预览：`http://localhost:5173`
 - 后端 API：`http://localhost:3001`
 
-### 6.3 单独启动
+也可分开启动：
 
 ```bash
-# terminal 1
+# 终端 1
 cd backend
 npm run dev
 
-# terminal 2
+# 终端 2
 cd frontend
 npm run dev
 ```
 
-### 6.4 编译检查
+## 6. 编译与检查
 
 ```bash
 cd frontend && npm run lint && npm run build
@@ -101,7 +90,7 @@ cd ../backend && npm run lint && npm run build
 
 ## 7. 环境变量
 
-### backend/.env.example
+`backend/.env.example`
 
 ```env
 PORT=3001
@@ -109,20 +98,23 @@ FRONTEND_ORIGIN=http://localhost:5173
 DB_FILE=backend/data/nba_store.db
 ```
 
-### frontend/.env.example
+`frontend/.env.example`
 
 ```env
 VITE_API_BASE_URL=
 ```
 
-说明：本地开发默认使用 Vite 代理，不填 `VITE_API_BASE_URL` 即可。
+说明：本地开发默认使用 Vite 代理，通常不填 `VITE_API_BASE_URL`。
 
 ## 8. 阶段提交记录
 
 - `feat: bootstrap fullstack nba store workspace`
-  - 完成前后端工程化改造与主功能落地
+  - 完成前后端工程化改造与核心业务流程。
 - `feat: add admin summary metrics endpoint and dashboard cards`
-  - 增加后台统计接口与管理看板指标卡
+  - 增加后台汇总统计接口与看板指标。
 - `docs: improve project readme with setup and preview guide`
-  - 完善项目文档与预览说明
-
+  - 完善项目文档、部署与预览说明。
+- `fix: localize ui and default data to chinese`
+  - 前后端文案与默认数据改为中文。
+- `feat: refine chinese navbar, team order, and premium light UI`
+  - 导航品牌改为“准心贸易”；球队顺序按需求调整；浅色高质感视觉升级。
